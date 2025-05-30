@@ -1,0 +1,18 @@
+{
+    "connection": {
+        "scanDuration": 8000,
+        "connectionTimeout": 5000
+    },
+    "arousal": {
+        "limit": 1000,
+        "config": {
+            "sensitivityThreshold": 40,
+            "rampTimeSeconds": 30,
+            "coolTimeSeconds": 10,
+            "maxArousalLimit": 4000,
+            "clenchPressureSensitivity": 30,
+            "clenchTimeMinThresholdMs": 200,
+            "clenchTimeMaxThresholdMs": 3500
+        }
+    }
+}

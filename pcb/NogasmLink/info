@@ -1,0 +1,434 @@
+{
+  "uuid": "8fb2bbf8d18ef23d786e595c618b2d76",
+  "path": "Offline/NogasmLink",
+  "name": "NogasmLink",
+  "content": "",
+  "created_at": "2025-05-20 09:05:18",
+  "updated_at": "2025-05-20 11:24:25",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "16d3097c535b19349921d6f47a5ebd07",
+      "title": "NogasmLink_current",
+      "description": "This is my exact current version that was hand soldered",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "7132866f921b4a13bcbb9fb05a647c39": 1,
+        "73cc2b137d404b18869b7ad4a06df359": 1,
+        "f8d1649c23734e7ab05b2091f52c1825": 1,
+        "f23aef1620cb4756bdf03cb6588236a8": 1,
+        "47f907d0a8c24c6ca6ab8192499f4fea": 1,
+        "bb009484ef804a24ac5d18c54b249586": 7,
+        "fd11c9e744c44aeab6011e8bd4c3ea86": 1,
+        "c771916790284db097b4e058557c8989": 1,
+        "a6d0df5c871b458eb54f6c69c94326f6": 1
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "0.1u",
+          1,
+          "C0603",
+          "C1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "SMD_RGB_LED_Breakout",
+          1,
+          "RGB-LED-0606",
+          "L1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "10k",
+          2,
+          "R0603",
+          "R1,R7",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "20k",
+          1,
+          "R0603",
+          "R2",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "220",
+          3,
+          "R0603",
+          "R3,R4,R6",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "1k",
+          1,
+          "R0603",
+          "R5",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "10kΩ",
+          1,
+          "RES-ADJ-TH_3P_L9.6-W4.8-P2.50-L",
+          "SW1",
+          {
+            "Manufacturer Part": "CT-94EW103",
+            "Manufacturer": "NIDEC(尼得科)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C2921725"
+          }
+        ],
+        [
+          "ESP32-DEVKITC-32U",
+          1,
+          "ESP32_DEVKITC_V4_WROOM32U",
+          "U1",
+          {
+            "Manufacturer Part": "ESP32-DevKitC-32D",
+            "Manufacturer": "ESPRESSIF(乐鑫)",
+            "Supplier": "",
+            "Supplier Part": "C571181"
+          }
+        ],
+        [
+          "MCP6002T-I/SN(MS)",
+          1,
+          "SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL",
+          "U2",
+          {
+            "Manufacturer Part": "MCP6002T-I/SN(MS)",
+            "Manufacturer": "MSKSEMI(美森科)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C20538868"
+          }
+        ],
+        [
+          "KY-040 D3XR",
+          1,
+          "KY-040",
+          "U3",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "1uF",
+          1,
+          "CAP-TH_BD5.0-P2.00-D0.5-FD-1",
+          "U4",
+          {
+            "Manufacturer Part": "NP1061HMC115RB",
+            "Manufacturer": "Xunda(讯达)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3003236"
+          }
+        ],
+        [
+          "MPX5700GP1",
+          1,
+          "SENSOR-TH_MPX5700AP",
+          "U6",
+          {
+            "Manufacturer Part": "MPX5700GP1",
+            "Manufacturer": "NXP(恩智浦)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3256337"
+          }
+        ]
+      ],
+      "updateTime": 1747733065,
+      "createTime": 1747724719,
+      "histories": [],
+      "created_at": "2025-05-20 09:05:19",
+      "updated_at": "2025-05-20 11:24:25"
+    },
+    {
+      "uuid": "e723ca6e424b2cf3bedef422556e5516",
+      "title": "NogasmLink_assembled",
+      "description": "This will be the future version",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {},
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "ESP32-DEVKITC-32U SAMDIL",
+          1,
+          "ESP32_DEVKITC_V4_WROOM32U",
+          "U1",
+          {
+            "Manufacturer Part": "ESP32-DevKitC-32D",
+            "Manufacturer": "ESPRESSIF(乐鑫)",
+            "Supplier": "",
+            "Supplier Part": "C571181"
+          }
+        ],
+        [
+          "MCP6002T-I/SN(MS)",
+          1,
+          "SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL",
+          "U2",
+          {
+            "Manufacturer Part": "MCP6002T-I/SN(MS)",
+            "Manufacturer": "MSKSEMI(美森科)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C20538868"
+          }
+        ],
+        [
+          "KY-040 D3XR",
+          1,
+          "KY-040",
+          "U3",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ]
+      ],
+      "updateTime": 1747726662,
+      "createTime": 1747726662,
+      "histories": [],
+      "created_at": "2025-05-20 09:37:42",
+      "updated_at": "2025-05-20 09:37:42"
+    },
+    {
+      "uuid": "8a9cd97df51e8ddcaddd50fb2d95366f",
+      "puuid": "8fb2bbf8d18ef23d786e595c618b2d76",
+      "title": "HandSoldered_PCB",
+      "filename": "HandSoldered_PCB.json",
+      "description": "",
+      "docType": "3",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "f8151fdc728a41ebbc304e11d39e5437": 1,
+        "c868e16a0ae64c9987a271cb7badedfb": 1,
+        "398691f1f785460098bbe5ee6590333c": 7,
+        "93f3c16897304db9bd583b2f7842b6f4": 1,
+        "534de39421bf465a9b0b138fd3ac6590": 1,
+        "ac27317f92d6481fae7a7dcfbec7f382": 1,
+        "0df1d8dcad404c8fb913edb9c9072ff6": 1,
+        "8d11363254c14cf3a8ad83dc059d3b3e": 1,
+        "806a55eb4d3c40ab838f70f86785d85e": 1
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "0.1u",
+          1,
+          "C0603",
+          "C1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "SMD_RGB_LED_Breakout",
+          1,
+          "RGB-LED-0606",
+          "L1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "10k",
+          2,
+          "R0603",
+          "R1,R7",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "20k",
+          1,
+          "R0603",
+          "R2",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "220",
+          3,
+          "R0603",
+          "R3,R4,R6",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "1k",
+          1,
+          "R0603",
+          "R5",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "10kΩ",
+          1,
+          "RES-ADJ-TH_3P_L9.6-W4.8-P2.50-L",
+          "SW1",
+          {
+            "Manufacturer Part": "CT-94EW103",
+            "Manufacturer": "NIDEC(尼得科)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C2921725"
+          }
+        ],
+        [
+          "ESP32-DEVKITC-32U",
+          1,
+          "ESP32_DEVKITC_V4_WROOM32U",
+          "U1",
+          {
+            "Manufacturer Part": "ESP32-DevKitC-32D",
+            "Manufacturer": "ESPRESSIF(乐鑫)",
+            "Supplier": "",
+            "Supplier Part": "C571181"
+          }
+        ],
+        [
+          "KY-040 D3XR",
+          1,
+          "KY-040",
+          "U3",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "1uF",
+          1,
+          "CAP-TH_BD5.0-P2.00-D0.5-FD-1",
+          "U4",
+          {
+            "Manufacturer Part": "NP1061HMC115RB",
+            "Manufacturer": "Xunda(讯达)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3003236"
+          }
+        ],
+        [
+          "MPX5700GP1",
+          1,
+          "SENSOR-TH_MPX5700AP",
+          "U6",
+          {
+            "Manufacturer Part": "MPX5700GP1",
+            "Manufacturer": "NXP(恩智浦)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C3256337"
+          }
+        ],
+        [
+          "MCP6002T-I/SN(MS)",
+          1,
+          "SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL",
+          "U2",
+          {
+            "Manufacturer Part": "MCP6002T-I/SN(MS)",
+            "Manufacturer": "MSKSEMI(美森科)",
+            "Supplier": "LCSC",
+            "Supplier Part": "C20538868"
+          }
+        ]
+      ],
+      "updateTime": 1747733058,
+      "createTime": 1747732768,
+      "histories": [],
+      "created_at": "2025-05-20 11:19:28",
+      "updated_at": "2025-05-20 11:24:18"
+    }
+  ],
+  "sort": [
+    "16d3097c535b19349921d6f47a5ebd07",
+    "e723ca6e424b2cf3bedef422556e5516"
+  ],
+  "title": "NogasmLink",
+  "foldername": "NogasmLink",
+  "schfilename": "NogasmLink.json",
+  "schfilemtime": 1747733065456
+}

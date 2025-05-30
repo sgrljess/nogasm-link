@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="200" height="200"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#2a2a72"></circle>
+  <circle cx="100" cy="100" r="85" fill="#3a3a82"></circle>
+  
+  <!-- Vibration Waves -->
+  <g fill="none" stroke="#8be9fd" stroke-width="4" stroke-linecap="round">
+    <path d="M60,100 Q75,70 90,100 Q105,130 120,100 Q135,70 150,100" opacity="0.8"></path>
+    <path d="M50,100 Q70,60 90,100 Q110,140 130,100 Q150,60 170,100" opacity="0.5" transform="translate(0,10)"></path>
+    <path d="M40,100 Q65,50 90,100 Q115,150 140,100 Q165,50 190,100" opacity="0.3" transform="translate(0,20)"></path>
+  </g>
+  
+  <!-- Bluetooth Symbol -->
+  <path d="M100,60 L120,80 L100,100 L120,120 L100,140 L100,100 L100,60 M100,60 L80,80 M100,140 L80,120" fill="none" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"></path>
+  
+  <!-- Signal Dots -->
+  <circle cx="55" cy="100" r="5" fill="#ff79c6"></circle>
+  <circle cx="145" cy="100" r="5" fill="#ff79c6"></circle>
+  
+  <!-- Lock Symbol (replacing heart) -->
+  <g transform="translate(100, 150) scale(0.9)">
+    <rect x="-15" y="-15" width="30" height="25" rx="3" ry="3" fill="#50fa7b"></rect>
+    <path d="M-10,-15 L-10,-25 Q-10,-35 0,-35 Q10,-35 10,-25 L10,-15" fill="none" stroke="#50fa7b" stroke-width="4" stroke-linecap="round"></path>
+  </g>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>

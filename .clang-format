@@ -1,0 +1,24 @@
+Language: Cpp
+BasedOnStyle: Google
+SortIncludes: "Never"
+IncludeBlocks: Preserve  # For newer clang-format versions
+ColumnLimit: 180
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeBraces: Allman
+LambdaBodyIndentation: Signature
+ContinuationIndentWidth: 2  # This controls the general continuation indent
+IndentWrappedFunctionNames: false
+AlignAfterOpenBracket: DontAlign  # This will prevent alignment with the opening bracket
+AllowShortLambdasOnASingleLine: None  # This forces multi-line lambdas even if they're short
+AllowShortBlocksOnASingleLine: "Never"
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+SpaceBeforeParens: ControlStatements
+PointerAlignment: Left
+AlignArrayOfStructures: Left
+AlignOperands: Align
+BreakBeforeTernaryOperators: true
