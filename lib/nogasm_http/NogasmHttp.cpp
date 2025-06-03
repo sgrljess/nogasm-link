@@ -287,7 +287,7 @@ void NogasmHttp::generateArousalConfigJson(T &doc)
   doc["sensitivityThreshold"] = config.sensitivityThreshold;
   doc["maxPressureLimit"] = _arousalManager.getPressureLimit();
   doc["maxArousalLimit"] = config.maxArousalLimit;
-  doc["maxSpeed"] = config.maxSpeed;
+  doc["maxVibrationLevel"] = ArousalManager::speedToLevel(config.maxSpeed);
   doc["frequency"] = config.frequency;
   doc["rampTimeSeconds"] = config.rampTimeSeconds;
   doc["coolTimeSeconds"] = config.coolTimeSeconds;
@@ -763,8 +763,12 @@ void NogasmHttp::handleSetArousalState(AsyncWebServerRequest *request, uint8_t *
 
   if (!doc["reset"].isNull() && doc["reset"].as<bool>())
   {
-    _arousalManager.resetArousal();
-    sendSuccessResponse(request, true, "Arousal reset");
+    _arousalManager.end();
+    _arousalManager.reset();
+    _arousalManager.recalibratePressure();
+    _arousalManager.begin();
+
+    sendSuccessResponse(request, true, "Arousal reset, sensor recalibrated");
     return;
   }
 
@@ -867,9 +871,11 @@ void NogasmHttp::handleUpdateArousalConfig(AsyncWebServerRequest *request, uint8
     config.maxArousalLimit = doc["maxArousalLimit"].as<int>();
   }
 
-  if (!doc["maxSpeed"].isNull())
+  if (!doc["maxVibrationLevel"].isNull())
   {
-    config.maxSpeed = doc["maxSpeed"].as<int>();
+    const int maxVibrationLevel = constrain(doc["maxVibrationLevel"].as<int>(), 0, SPEED_LEVEL_MAX);
+    config.maxSpeed = ArousalManager::levelToSpeed(maxVibrationLevel);
+    Util::logTrace("NogasmHttp::maxSpeed = %d", config.maxSpeed);
   }
 
   if (!doc["frequency"].isNull())

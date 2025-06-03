@@ -18,9 +18,8 @@ void ArousalManager::toggle()
   }
 }
 
-void ArousalManager::begin()
+void ArousalManager::reset()
 {
-  _started = true;
   _arousal = 0;
   _lastPressureValue = 0;
   _peakStart = 0;
@@ -30,8 +29,13 @@ void ArousalManager::begin()
   _limitExceeded = false;
   _limitExceededTime = 0;
   _limitExceededCounter = 0;
-  _sessionStartTime = millis();
+}
 
+void ArousalManager::begin()
+{
+  reset();
+  _started = true;
+  _sessionStartTime = millis();
   Util::logDebug("ArousalManager started with pressure limit: %d", _arousalLimit);
   notifyStateChange(ArousalState::IDLE);
 }
@@ -114,7 +118,7 @@ void ArousalManager::update()
   _arousal *= _config.arousalDecayRate;
 
   const float speedIncrement = (static_cast<float>(_config.maxSpeed) / (static_cast<float>(_config.frequency) * _config.rampTimeSeconds));
-  const float pressure = constrain(_pressureSensor.readSmoothedPressure(), 0, _config.maxArousalLimit);
+  const float pressure = _pressureSensor.readSmoothedPressure();
 
   if (!_pressureSensor.isReady())
   {
@@ -221,7 +225,7 @@ void ArousalManager::update()
       Util::logDebug("ArousalManager::cool-off::ended -> resuming vibration");
     }
   }
-  else if (_vibrationSpeed < static_cast<float>(_config.maxSpeed))
+  else if (_vibrationSpeed < _config.maxSpeed)
   {
     Util::logTrace("ArousalManager::vibration ramping -> %.2f", _vibrationSpeed);
     _vibrationSpeed += speedIncrement;
@@ -229,7 +233,7 @@ void ArousalManager::update()
 
   if (_vibrationSpeed > 0)
   {
-    const uint8_t vibrationLevel = map(constrain((int)_vibrationSpeed, 0, _config.maxSpeed), 0, _config.maxSpeed, 0, 20);
+    const uint8_t vibrationLevel = speedToLevel(constrain(_vibrationSpeed, 0, _config.maxSpeed));
     updateVibrationLevel(vibrationLevel);
   }
   else
@@ -247,7 +251,7 @@ long ArousalManager::detectClench(const unsigned long currentTime, const float p
   // adjust threshold back if inflated during detection
   if (pressure > (_config.clenchPressureThreshold + _config.clenchPressureSensitivity))
   {
-    _config.clenchPressureThreshold = constrain(pressure - sensitivityValue, 0, _config.maxArousalLimit);
+    _config.clenchPressureThreshold = constrain(pressure - sensitivityValue, 0, _pressureSensor.getMaxPressureLimitRaw());
     notifyStateChange(ArousalState::THRESHOLD_ADJUSTED);
 
     Util::logDebug("ArousalManager::threshold::adjust -> %.2f", _config.clenchPressureThreshold);

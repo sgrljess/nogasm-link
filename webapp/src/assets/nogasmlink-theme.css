@@ -397,6 +397,11 @@ body {
     margin: 1.5rem 0;
 }
 
+.slider-container > .alert {
+    display: block;
+    font-size: smaller;
+}
+
 .slider-label {
     display: flex;
     justify-content: space-between;

@@ -7,15 +7,36 @@
 #include "ArousalConfig.h"
 #include "Util.h"
 
+#define SPEED_LEVEL_MAX 20
+#define SPEED_VIB_MAX 255
+
 class ArousalManager
 {
  public:
   ArousalManager(PressureSensor& sensor, NogasmBLEManager& bleManager);
 
+  void reset();
   void begin();
   void end();
   void update();
   void toggle();
+
+  /**
+   * Converts internal vibration speed (0-255) to device level (0-20).
+   * Uses floating-point map with rounding instead of Arduino's integer map()
+   * because integer division truncates fractional parts. For example, mapping
+   * 1 from range (0-20) to (0-255) gives 12.75, which truncates to 12 instead
+   * of the more accurate rounded result of 13.
+   */
+  static int speedToLevel(const float speed)
+  {
+    return Util::mapWithRound(speed, 0, SPEED_VIB_MAX, 0, SPEED_LEVEL_MAX);
+  }
+
+  static int levelToSpeed(const int level)
+  {
+    return Util::mapWithRound(level, 0, SPEED_LEVEL_MAX, 0, SPEED_VIB_MAX);
+  }
 
   bool isActive() const
   {
@@ -44,9 +65,9 @@ class ArousalManager
 
   float getArousalPercent() const;
 
-  void resetArousal()
+  void recalibratePressure() const
   {
-    _arousal = 0;
+    _pressureSensor.calibrateZero();
   }
 
   void setArousalLimit(const int limit)
