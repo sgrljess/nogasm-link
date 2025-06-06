@@ -85,24 +85,23 @@
             </button>
         </div>
 
-        <div class="slider-container">
-            <div class="slider-label">
-                <span>Arousal sensitivity</span>
-            </div>
-            <input type="range" class="slider" min="0" max="255" v-model="sensitivityInput"/>
-            <div class="slider-range">
-                <span>Sensitive</span>
-                <span>{{ sensitivityInput }}</span>
-                <span>Insensitive</span>
-            </div>
-            <div v-if="config.sensitivityAfterEdgeDecayRate < 1" class="alert alert-success">
-                <p>Auto-reduce is switched <strong>on</strong></p>
-                <p >
+        <SliderInput id="arousalSensitivity" v-model="sensitivityInput"
+                     :min="0" min-title="Sensitive"
+                     :max="255" max-title="Insensitive">
+            <template v-slot:label>Arousal sensitivity</template>
+            <template v-slot:alert>
+                <p>Auto-reduce is switched
+                    <strong>{{ config.sensitivityAfterEdgeDecayRate < 1 ? 'on' : 'off' }}</strong>
+                </p>
+                <p v-if="config.sensitivityAfterEdgeDecayRate < 1">
                     Every time an edge is detected, sensitivity will reduce by
                     <strong>{{ ((1 - config.sensitivityAfterEdgeDecayRate) * 100).toFixed(1) }}%</strong>
                 </p>
-            </div>
-        </div>
+                <p v-else>
+                    Sensitivity will remain the same after an edge is detected
+                </p>
+            </template>
+        </SliderInput>
 
         <div v-if="showConfig" class="config-section">
             <div class="tabs">
@@ -118,147 +117,114 @@
             </div>
 
             <div v-if="configTab === 'general'" class="config-grid">
-                <div class="config-item">
-                    <label title="The limit for the vibration level">
+                <SliderInput id="maxVibrationLevel" v-model="config.maxVibrationLevel"
+                             title="The limit for the vibration level"
+                             :min="0" min-title="Off"
+                             :max="20" max-title="Faster">
+                    <template v-slot:label>
                         Vibration level maximum
-                    </label>
-                    <input type="range" class="slider" v-model="config.maxVibrationLevel"
-                           min="0" max="20"/>
-                    <div class="slider-range">
-                        <span>Off</span>
-                        <span>{{ config.maxVibrationLevel }}</span>
-                        <span>Faster</span>
-                    </div>
-                </div>
-                <div class="config-item">
-                    <label title="Time it takes the device to reach max speed">
+                    </template>
+                </SliderInput>
+                <SliderInput id="rampTimeSeconds" v-model="config.rampTimeSeconds" unit="s"
+                             title="Time it takes the device to reach max speed"
+                             :min="5" min-title="Shorter"
+                             :max="300" max-title="Longer">
+                    <template v-slot:label>
                         Vibration speed ramp time
-                    </label>
-                    <input type="range" class="slider" v-model="config.rampTimeSeconds"
-                           min="5" max="300"/>
-                    <div class="slider-range">
-                        <span>Shorter</span>
-                        <span>{{ config.rampTimeSeconds }}s</span>
-                        <span>Longer</span>
-                    </div>
-                </div>
+                    </template>
+                </SliderInput>
 
-                <div class="config-item">
-                    <label title="How much time to wait before restarting vibration after edge has been detected">
+                <SliderInput id="targetEdgeCount" v-model="config.targetEdgeCount"
+                             title="How many edges are needed before orgasm is allowed"
+                             :min="1" min-title="Less"
+                             :max="500" max-title="More">
+                    <template v-slot:label>
+                        Edge count needed
+                    </template>
+                </SliderInput>
+                <SliderInput id="coolTimeSeconds" v-model="config.coolTimeSeconds" unit="s"
+                             title="How much time to wait before restarting vibration after edge has been detected"
+                             :min="5" min-title="Shorter"
+                             :max="300" max-title="Longer">
+                    <template v-slot:label>
                         Edge cooldown time
-                    </label>
-                    <input type="range" class="slider" v-model="config.coolTimeSeconds"
-                           min="5" max="300"/>
-                    <div class="slider-range">
-                        <span>Shorter</span>
-                        <span>{{ config.coolTimeSeconds }}s</span>
-                        <span>Longer</span>
-                    </div>
-                </div>
-                <div class="config-item">
-                    <label title="How many edges are needed before orgasm is allowed">Edge count needed</label>
-                    <input type="range" class="slider" v-model="config.targetEdgeCount"
-                           min="1" max="500"/>
-                    <div class="slider-range">
-                        <span>Less</span>
-                        <span>{{ config.targetEdgeCount }}</span>
-                        <span>More</span>
-                    </div>
-                </div>
+                    </template>
+                </SliderInput>
             </div>
             <div v-else-if="configTab === 'sensitivity'" class="config-grid">
-                <div class="config-item">
-                    <label>Clench sensitivity</label>
-                    <input type="range" class="slider" v-model="config.clenchPressureSensitivity"
-                           min="5" max="200"/>
-                    <div class="slider-range">
-                        <span>Sensitive</span>
-                        <span>{{ config.clenchPressureSensitivity }}</span>
-                        <span>Insensitive</span>
-                    </div>
-                </div>
-                <div class="config-item">
-                    <label>Peak sensitivity</label>
-                    <input type="range" class="slider" v-model="config.sensitivityThreshold"
-                           min="10" max="200"/>
-                    <div class="slider-range">
-                        <span>Sensitive</span>
-                        <span>{{ config.sensitivityThreshold }}</span>
-                        <span>Insensitive</span>
-                    </div>
-                </div>
+                <SliderInput id="clenchPressureSensitivity" v-model="config.clenchPressureSensitivity"
+                             :min="5" min-title="Sensitive"
+                             :max="200" max-title="Insensitive">
+                    <template v-slot:label>
+                        Clench sensitivity
+                    </template>
+                </SliderInput>
 
-                <div class="config-item">
-                    <label>Minimum clench detection time</label>
-                    <input type="range" class="slider" v-model="config.clenchTimeMinThresholdMs"
-                           min="50" max="1000" step="10"/>
-                    <div class="slider-range">
-                        <span>Less</span>
-                        <span>{{ config.clenchTimeMinThresholdMs }}ms</span>
-                        <span>More</span>
-                    </div>
-                </div>
-                <div class="config-item">
-                    <label>Maximum clench detection time</label>
-                    <input type="range" class="slider" v-model="config.clenchTimeMaxThresholdMs"
-                           min="1500" max="10000" step="100">
-                    <div class="slider-range">
-                        <span>Less</span>
-                        <span>{{ config.clenchTimeMaxThresholdMs }}ms</span>
-                        <span>More</span>
-                    </div>
-                </div>
+                <SliderInput id="sensitivityThreshold" v-model="config.sensitivityThreshold"
+                             :min="10" min-title="Sensitive"
+                             :max="200" max-title="Insensitive">
+                    <template v-slot:label>
+                        Peak sensitivity
+                    </template>
+                </SliderInput>
+
+                <SliderInput id="clenchTimeMinThresholdMs" v-model="config.clenchTimeMinThresholdMs" unit="ms"
+                             :min="50" min-title="Less"
+                             :max="1000" max-title="More"
+                             :step="10">
+                    <template v-slot:label>
+                        Minimum clench detection time
+                    </template>
+                </SliderInput>
+
+                <SliderInput id="clenchTimeMaxThresholdMs" v-model="config.clenchTimeMaxThresholdMs" unit="ms"
+                             :min="1500" min-title="Less"
+                             :max="10000" max-title="More"
+                             :step="100">
+                    <template v-slot:label>
+                        Maximum clench detection time
+                    </template>
+                </SliderInput>
             </div>
-            <div v-else-if="configTab === 'advanced'" class="config-grid">
-                <div class="config-item">
-                    <label title="Rate at which the arousal level will decay at the specified frequency">
-                        Arousal decay rate
-                    </label>
-                    <input type="range" class="slider" v-model="config.arousalDecayRate"
-                           min="0.100" max="0.999" step="0.001"/>
-                    <div class="slider-range">
-                        <span>Faster</span>
-                        <span>{{ config.arousalDecayRate }}</span>
-                        <span>Slower</span>
-                    </div>
-                </div>
-                <div class="config-item">
-                    <label title="The max that the arousal sensitivity is based on">
-                        Maximum arousal limit
-                    </label>
-                    <input type="range" class="slider" v-model="config.maxArousalLimit"
-                           min="100" max="4000"/>
-                    <div class="slider-range">
-                        <span>Less</span>
-                        <span>{{ config.maxArousalLimit }}</span>
-                        <span>More</span>
-                    </div>
-                </div>
 
-                <div class="config-item">
-                    <label title="Determines by how much the sensitivity would reduce after an edge has been detected">
+            <div v-else-if="configTab === 'advanced'" class="config-grid">
+                <SliderInput id="arousalDecayRate" v-model="config.arousalDecayRate"
+                             title="Rate at which the arousal level will decay at the specified frequency"
+                             :min="0.100" min-title="Faster"
+                             :max="0.999" max-title="Slower"
+                             :step="0.001">
+                    <template v-slot:label>
+                        Arousal decay rate
+                    </template>
+                </SliderInput>
+
+                <SliderInput id="maxArousalLimit" v-model="config.maxArousalLimit"
+                             title="The max that the arousal sensitivity is based on"
+                             :min="100" min-title="Less"
+                             :max="4000" max-title="More">
+                    <template v-slot:label>
+                        Maximum arousal limit
+                    </template>
+                </SliderInput>
+
+                <SliderInput id="sensitivityAfterEdgeDecayRate" v-model="config.sensitivityAfterEdgeDecayRate"
+                             title="Determines by how much the sensitivity would reduce after an edge has been detected"
+                             :min="0.100" min-title="Faster"
+                             :max="1.00" max-title="Slower / Off"
+                             :step="0.001">
+                    <template v-slot:label>
                         Sensitivity after edge decay rate
-                    </label>
-                    <input type="range" class="slider" v-model="config.sensitivityAfterEdgeDecayRate"
-                           min="0.100" max="1.00" step="0.001"/>
-                    <div class="slider-range">
-                        <span>Faster</span>
-                        <span>{{ config.sensitivityAfterEdgeDecayRate }}</span>
-                        <span>Slower / Off</span>
-                    </div>
-                </div>
-                <div class="config-item">
-                    <label title="Sensitivity won't decay to less than this limit">
+                    </template>
+                </SliderInput>
+
+                <SliderInput id="minSensitivityWhileDecaying" v-model="config.minSensitivityWhileDecaying"
+                             title="Sensitivity won't decay to less than this limit"
+                             :min="1" min-title="Less"
+                             :max="255" max-title="More">
+                    <template v-slot:label>
                         Minimum sensitivity after edge limit
-                    </label>
-                    <input type="range" class="slider" v-model="config.minSensitivityWhileDecaying"
-                           min="1" max="255"/>
-                    <div class="slider-range">
-                        <span>Less</span>
-                        <span>{{ config.minSensitivityWhileDecaying }}</span>
-                        <span>More</span>
-                    </div>
-                </div>
+                    </template>
+                </SliderInput>
             </div>
 
             <div class="config-actions">
@@ -278,11 +244,14 @@
 
 <script>
 import websocketService from '../services/WebSocketService';
+import SliderInput from "@/components/SliderInput.vue";
 
 export default {
     name: 'ArousalControl',
+    components: {SliderInput},
     data() {
         return {
+            test: '0',
             arousalStateString: null,
             arousalActive: false,
             arousalPercent: 0,
@@ -697,27 +666,6 @@ export default {
     margin: 2rem 0;
 }
 
-.alert {
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    margin: 1rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.alert-warning {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
-}
-
-.alert-success {
-    background: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
-}
-
 .fade-out {
     animation: fadeOut 3s forwards;
 }
@@ -746,17 +694,6 @@ export default {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
-}
-
-.config-item {
-    display: flex;
-    flex-direction: column;
-}
-
-.config-item label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
 }
 
 .config-actions {

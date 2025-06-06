@@ -18,51 +18,40 @@
                 <div class="config-section">
                     <h6><i class="fas fa-wifi"></i> Connection Settings</h6>
 
-                    <div class="config-item">
-                        <label>Bluetooth Scan Duration</label>
-                        <div class="slider-container">
-                            <input type="range" class="slider"
-                                   v-model="config.connection.scanDuration"
-                                   min="5000" max="60000" step="1000">
-                            <div class="slider-range">
-                                <span>Short</span>
-                                <span>{{ Math.round(config.connection.scanDuration / 1000) }}s</span>
-                                <span>Long</span>
-                            </div>
-                        </div>
-                    </div>
+                    <SliderInput id="scanDuration" v-model="config.connection.scanDuration" unit="s"
+                                 title="The duration in which to scan for devices"
+                                 :min="5000" min-title="Short"
+                                 :max="60000" max-title="Long"
+                                 :step="1000"
+                                 :display-transform="value => Math.round(value / 1000)">
+                        <template v-slot:label>
+                            Bluetooth scan duration
+                        </template>
+                    </SliderInput>
 
-                    <div class="config-item">
-                        <label>Connection Timeout</label>
-                        <div class="slider-container">
-                            <input type="range" class="slider"
-                                   v-model="config.connection.connectionTimeout"
-                                   min="5000" max="30000" step="1000">
-                            <div class="slider-range">
-                                <span>Short</span>
-                                <span>{{ Math.round(config.connection.connectionTimeout / 1000) }}s</span>
-                                <span>Long</span>
-                            </div>
-                        </div>
-                    </div>
+                    <SliderInput id="connectionTimeout" v-model="config.connection.connectionTimeout" unit="s"
+                                 title="The time to wait for BLE operations to complete before timing out"
+                                 :min="5000" min-title="Short"
+                                 :max="30000" max-title="Long"
+                                 :step="1000"
+                                 :display-transform="value => Math.round(value / 1000)">
+                        <template v-slot:label>
+                            Connection timeout
+                        </template>
+                    </SliderInput>
                 </div>
 
                 <div class="config-section">
                     <h6><i class="fas fa-cog"></i> Device Settings</h6>
 
-                    <div class="config-item">
-                        <label>Default Vibration Level</label>
-                        <div class="slider-container">
-                            <input type="range" class="slider"
-                                   v-model="config.device.defaultVibrationLevel"
-                                   min="0" max="20">
-                            <div class="slider-range">
-                                <span>Off</span>
-                                <span>Level {{ config.device.defaultVibrationLevel }}</span>
-                                <span>Max</span>
-                            </div>
-                        </div>
-                    </div>
+                    <SliderInput id="defaultVibrationLevel" v-model="config.device.defaultVibrationLevel"
+                                 :min="0" min-title="Off"
+                                 :max="20" max-title="Max"
+                                 :display-transform="value => `Level ${value}`">
+                        <template v-slot:label>
+                            Default Vibration Level
+                        </template>
+                    </SliderInput>
                 </div>
 
                 <div class="config-section">
@@ -107,8 +96,11 @@
 </template>
 
 <script>
+import SliderInput from "@/components/SliderInput.vue";
+
 export default {
     name: 'ConfigSettings',
+    components: {SliderInput},
     data() {
         return {
             expanded: false,
@@ -305,21 +297,6 @@ export default {
 
 .config-section h6 i {
     color: var(--text-secondary);
-}
-
-.config-item {
-    margin-bottom: 1.5rem;
-}
-
-.config-item:last-child {
-    margin-bottom: 0;
-}
-
-.config-item label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 0.75rem;
-    color: var(--text-primary);
 }
 
 .config-switches {

@@ -36,13 +36,15 @@
 
         <div class="tab-content">
             <div v-show="activeTab === 'vibration'" class="control-panel">
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Intensity</span>
-                        <span class="slider-value">Level {{ vibrationLevel }}</span>
-                    </div>
-                    <input type="range" class="slider" min="0" max="20" v-model="vibrationLevel">
-                </div>
+                <SliderInput id="intensity" v-model="vibrationLevel"
+                             :simple="true"
+                             :min="0" min-title="Off"
+                             :max="20" max-title="Max"
+                             :display-transform="value => `Level ${value}`">
+                    <template v-slot:label>
+                        Intensity
+                    </template>
+                </SliderInput>
 
                 <div class="controls">
                     <button @click="setVibration(vibrationLevel)" class="btn btn-primary">
@@ -57,13 +59,15 @@
             </div>
 
             <div v-show="activeTab === 'rotation' && hasRotation" class="control-panel">
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Rotation Speed</span>
-                        <span class="slider-value">Level {{ rotationLevel }}</span>
-                    </div>
-                    <input type="range" class="slider" min="0" max="20" v-model="rotationLevel">
-                </div>
+                <SliderInput id="rotation" v-model="rotationLevel"
+                             :simple="true"
+                             :min="0" min-title="Off"
+                             :max="20" max-title="Max"
+                             :display-transform="value => `Level ${value}`">
+                    <template v-slot:label>
+                        Rotation speed
+                    </template>
+                </SliderInput>
 
                 <div class="controls">
                     <button @click="setRotation(rotationLevel)" class="btn btn-primary">
@@ -82,13 +86,15 @@
             </div>
 
             <div v-show="activeTab === 'air' && hasAirControl" class="control-panel">
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Air Pump Level</span>
-                        <span class="slider-value">Level {{ airLevel }}</span>
-                    </div>
-                    <input type="range" class="slider" min="0" max="5" v-model="airLevel">
-                </div>
+                <SliderInput id="airPump" v-model="airLevel"
+                             :simple="true"
+                             :min="0" min-title="Off"
+                             :max="4" max-title="Max"
+                             :display-transform="value => `Level ${value}`">
+                    <template v-slot:label>
+                        Air pump level
+                    </template>
+                </SliderInput>
 
                 <div class="controls">
                     <button @click="setAirLevel(airLevel)" class="btn btn-primary">
@@ -131,8 +137,11 @@
 </template>
 
 <script>
+import SliderInput from "@/components/SliderInput.vue";
+
 export default {
     name: 'DeviceControl',
+    components: {SliderInput},
     props: {
         batteryLevel: {
             type: Number,
