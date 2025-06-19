@@ -4,6 +4,7 @@
 #include <ESPmDNS.h>
 #include <LittleFS.h>
 #include "NogasmBLEManager.h"
+#include "NogasmUpdate.h"
 #include "NogasmHttp.h"
 #include "NogasmConfig.h"
 #include "ArousalManager.h"
@@ -27,6 +28,7 @@
 #define PRESSURE_WINDOW_SECONDS 2
 
 WiFiManager wifiManager;
+NogasmUpdate nogasmUpdate;
 NogasmConfig nogasmConfig(FILESYSTEM, CONFIG_FILE);  // NOLINT(*-interfaces-global-init)
 NogasmBLEManager nogasmBLEManager(nogasmConfig);
 const int pressureSamples = (PRESSURE_WINDOW_SECONDS * 1000) / (1000 / nogasmConfig.getArousalConfig().frequency);
@@ -34,7 +36,7 @@ PressureSensor pressureSensor(PRESSURE_SENSOR_PIN, pressureSamples);
 ArousalManager arousalManager(pressureSensor, nogasmBLEManager);
 EncoderManager encoderManager(arousalManager);
 RGBManager rgbManager(RGB_RED_PIN, RGB_GREEN_PIN, RGB_BLUE_PIN);
-NogasmHttp nogasmHttp(FILESYSTEM, nogasmBLEManager, wifiManager, nogasmConfig, arousalManager, encoderManager);  // NOLINT(*-interfaces-global-init)
+NogasmHttp nogasmHttp(FILESYSTEM, nogasmBLEManager, wifiManager, nogasmConfig, arousalManager, encoderManager, nogasmUpdate);  // NOLINT(*-interfaces-global-init)
 
 // Function prototypes
 void setupBLE();

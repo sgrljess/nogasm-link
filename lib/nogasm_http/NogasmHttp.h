@@ -6,7 +6,8 @@
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
 #include <set>
-#include <map>
+#include <WiFi.h>
+#include "NogasmUpdate.h"
 #include "NogasmBLEManager.h"
 #include "NogasmConfig.h"
 #include "EncoderManager.h"
@@ -17,7 +18,8 @@
 class NogasmHttp
 {
  public:
-  NogasmHttp(fs::FS& filesystem, NogasmBLEManager& bleManager, WiFiManager& wifiManager, NogasmConfig& config, ArousalManager& arousalManager, EncoderManager& encoderManager);
+  NogasmHttp(fs::FS& filesystem, NogasmBLEManager& bleManager, WiFiManager& wifiManager, NogasmConfig& config, ArousalManager& arousalManager, EncoderManager& encoderManager,
+    NogasmUpdate& nogasmUpdate);
 
   void begin();
   void update();
@@ -46,6 +48,7 @@ class NogasmHttp
   NogasmConfig& _config;
   EncoderManager& _encoderManager;
   ArousalManager& _arousalManager;
+  NogasmUpdate& _nogasmUpdate;
 
   void setupAPIEndpoints();
   void setupStaticFiles();
@@ -78,19 +81,26 @@ class NogasmHttp
   void handleGetArousalConfig(AsyncWebServerRequest* request);
   void handleUpdateArousalConfig(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
 
+  // API endpoint handlers - Update
+  void handleGetUpdateStatus(AsyncWebServerRequest* request);
+  void handleStartUpdate(AsyncWebServerRequest* request);
+  void handleUpdateUpload(const AsyncWebServerRequest* request, const String& filename, size_t index, uint8_t* data, size_t len, bool final) const;
+
   // WebSocket handlers
   void onWebSocketEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len);
-  void handleWebSocketMessage(AsyncWebSocketClient* client, void* arg, uint8_t* data, size_t len);
+  void handleWebSocketMessage(const AsyncWebSocketClient* client, void* arg, uint8_t* data, size_t len);
   void cleanupDisconnectedClients();
 
-  bool canSendToClient(AsyncWebSocketClient* client);
+  bool canSendToClient(const AsyncWebSocketClient* client);
   void sendMessageToClient(AsyncWebSocketClient* client, const String& message);
   void broadcastMessage(const String& message);
 
   String createBleStatusMessage();
   String createArousalStatusMessage();
+  String createUpdateStatusMessage();
   void sendBleStatusUpdate();
   void sendArousalStatusUpdate();
+  void sendUpdateStatusUpdate();
 
   // Shared JSON generation methods
   template <typename T>
@@ -101,6 +111,8 @@ class NogasmHttp
   void generateDevicesJson(T& json);
   template <typename T>
   void generateArousalConfigJson(T& json);
+  template <class T>
+  void generateUpdateStatusJson(T& doc);
 
   // Helper methods
   void sendJsonResponse(AsyncWebServerRequest* request, const JsonDocument& doc, int code = 200);

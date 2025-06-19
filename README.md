@@ -174,3 +174,14 @@ Real-time data at `/ws`:
 **Core Components**: ArousalManager, NogasmBLEManager, PressureSensor, EncoderManager, RGBManager, NogasmHttp
 
 **Data Flow**: Pressure sensor → Arousal detection → State machine → Device control → User feedback
+
+## Partition layout
+
+```text
+nvs: 20KB (Non-volatile storage)
+otadata: 8KB (OTA metadata)
+app0: 1536KB (Current firmware)
+app1: 1536KB (OTA target firmware)
+spiffs: 896KB (Web interface & data)
+coredump: 64KB (Debug data)
+```

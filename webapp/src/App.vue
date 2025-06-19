@@ -23,12 +23,16 @@
 
                 <div class="metric-grid">
                     <div class="metric">
-                        <div class="metric-value">{{ status.wifi.connected ? formatSignalStrength(status.wifi.rssi) : 'Disconnected' }}</div>
+                        <div class="metric-value">
+                            {{ status.wifi.connected ? formatSignalStrength(status.wifi.rssi) : 'Disconnected' }}
+                        </div>
                         <div class="metric-label">WiFi Signal</div>
                     </div>
                     <div class="metric">
                         <div class="metric-value">
-                            <span class="status-badge" :class="getBleStatusClass()">{{ status.ble.stateString || 'IDLE' }}</span>
+                            <span class="status-badge" :class="getBleStatusClass()">{{
+                                    status.ble.stateString || 'IDLE'
+                                }}</span>
                         </div>
                         <div class="metric-label">Bluetooth Status</div>
                     </div>
@@ -65,6 +69,8 @@
 
                 <config-settings @send-notification="notify"/>
             </div>
+
+            <nogasm-update/>
 
             <device-control v-if="status.ble.connected"
                             :battery-level="status.device.battery"
@@ -111,10 +117,12 @@ import ConfigSettings from './components/ConfigSettings.vue'
 import ArousalControl from './components/ArousalControl.vue'
 import ArousalTracker from './components/ArousalTracker.vue'
 import websocketService from './services/WebSocketService.js'
+import NogasmUpdate from "@/components/NogasmUpdate.vue";
 
 export default {
     name: 'App',
     components: {
+        NogasmUpdate,
         DeviceScanner,
         DeviceControl,
         ConfigSettings,

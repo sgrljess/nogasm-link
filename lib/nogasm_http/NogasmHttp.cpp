@@ -1,8 +1,11 @@
 // ReSharper disable CppMemberFunctionMayBeStatic
 #include "NogasmHttp.h"
+#include "NogasmUpdate.h"
 #include <WiFi.h>
 #include <ESPmDNS.h>
 #include <AsyncJson.h>
+
+#include <utility>
 
 #define WS_BLE_UPDATE_TIME 1000               // BLE status updates every 1 second
 #define WS_AROUSAL_UPDATE_TIME_ACTIVE 60      // Arousal updates every 100ms when active
@@ -10,15 +13,16 @@
 #define WS_CLIENT_TIMEOUT_MS 10000            // 10 seconds without pong = dead client
 #define WS_PING_INTERVAL_MS 15000             // Send ping every 15 seconds
 
-NogasmHttp::NogasmHttp(
-  fs::FS &filesystem, NogasmBLEManager &bleManager, WiFiManager &wifiManager, NogasmConfig &config, ArousalManager &arousalManager, EncoderManager &encoderManager)
+NogasmHttp::NogasmHttp(fs::FS &filesystem, NogasmBLEManager &bleManager, WiFiManager &wifiManager, NogasmConfig &config, ArousalManager &arousalManager,
+  EncoderManager &encoderManager, NogasmUpdate &nogasmUpdate)
     : _server(NOGASM_HTTP_PORT),
       _filesystem(filesystem),
       _bleManager(bleManager),
       _wifiManager(wifiManager),
       _config(config),
       _encoderManager(encoderManager),
-      _arousalManager(arousalManager)
+      _arousalManager(arousalManager),
+      _nogasmUpdate(nogasmUpdate)
 {
   _lastBleUpdate = 0;
   _lastArousalUpdate = 0;
@@ -26,6 +30,27 @@ NogasmHttp::NogasmHttp(
   _ws = nullptr;
   _lastBleState = BLE_IDLE;
   _lastArousalActive = false;
+
+  _nogasmUpdate.onStart(
+    [this](UpdateMode mode)
+    {
+      this->sendUpdateStatusUpdate();
+    });
+  _nogasmUpdate.onProgress(
+    [this](const UpdateProgress &progress)
+    {
+      this->sendUpdateStatusUpdate();
+    });
+  _nogasmUpdate.onEnd(
+    [this](bool success)
+    {
+      this->sendUpdateStatusUpdate();
+    });
+  _nogasmUpdate.onError(
+    [this](const String &error)
+    {
+      this->sendUpdateStatusUpdate();
+    });
 }
 
 void NogasmHttp::begin()
@@ -71,6 +96,11 @@ void NogasmHttp::update()
     sendArousalStatusUpdate();
     _lastArousalActive = arousalActive;
     _lastArousalUpdate = currentTime;
+  }
+
+  if (_nogasmUpdate.isUpdateInProgress())
+  {
+    sendUpdateStatusUpdate();
   }
 }
 
@@ -121,17 +151,17 @@ void NogasmHttp::onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
-void NogasmHttp::handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *data, const size_t len)
+void NogasmHttp::handleWebSocketMessage(const AsyncWebSocketClient *client, void *arg, uint8_t *data, const size_t len)
 {
   const auto info = static_cast<AwsFrameInfo *>(arg);
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
   {
     data[len] = 0;  // Null terminate
-    Util::logDebug("WebSocket message from client #%u: %s", client->id(), (char *)data);
+    Util::logDebug("WebSocket message from client #%u: %s", client->id(), reinterpret_cast<char *>(data));
   }
 }
 
-bool NogasmHttp::canSendToClient(AsyncWebSocketClient *client)
+bool NogasmHttp::canSendToClient(const AsyncWebSocketClient *client)
 {
   if (!client || client->status() != WS_CONNECTED)
   {
@@ -207,6 +237,17 @@ String NogasmHttp::createArousalStatusMessage()
   return output;
 }
 
+String NogasmHttp::createUpdateStatusMessage()
+{
+  JsonDocument doc;
+  doc["type"] = "update_status";
+  generateUpdateStatusJson(doc);
+
+  String output;
+  serializeJson(doc, output);
+  return output;
+}
+
 void NogasmHttp::sendBleStatusUpdate()
 {
   const String message = createBleStatusMessage();
@@ -216,6 +257,12 @@ void NogasmHttp::sendBleStatusUpdate()
 void NogasmHttp::sendArousalStatusUpdate()
 {
   const String message = createArousalStatusMessage();
+  broadcastMessage(message);
+}
+
+void NogasmHttp::sendUpdateStatusUpdate()
+{
+  const String message = createUpdateStatusMessage();
   broadcastMessage(message);
 }
 
@@ -297,6 +344,28 @@ void NogasmHttp::generateArousalConfigJson(T &doc)
   doc["clenchPressureSensitivity"] = config.clenchPressureSensitivity;
   doc["clenchTimeMinThresholdMs"] = config.clenchTimeMinThresholdMs;
   doc["clenchTimeMaxThresholdMs"] = config.clenchTimeMaxThresholdMs;
+}
+
+template <typename T>
+void NogasmHttp::generateUpdateStatusJson(T &doc)
+{
+  const UpdateProgress progress = _nogasmUpdate.getProgress();
+
+  doc["active"] = _nogasmUpdate.isUpdateInProgress();
+  doc["state"] = static_cast<int>(progress.state);
+  doc["mode"] = static_cast<int>(progress.mode);
+  doc["percentage"] = progress.percentage;
+  doc["current"] = progress.current;
+  doc["total"] = progress.total;
+  doc["error"] = progress.error;
+  doc["hasError"] = progress.hasError;
+  doc["md5Hash"] = progress.md5Hash;
+
+  if (WiFi.isConnected())
+  {
+    doc["hostname"] = WiFi.getHostname();
+    doc["ip"] = WiFi.localIP().toString();
+  }
 }
 
 void NogasmHttp::setupAPIEndpoints()
@@ -422,6 +491,44 @@ void NogasmHttp::setupAPIEndpoints()
     [this](AsyncWebServerRequest *request, uint8_t *data, const size_t len, const size_t index, const size_t total)
     {
       this->handleUpdateArousalConfig(request, data, len, index, total);
+    });
+
+  _server.on("/api/update/status", HTTP_GET,
+    [this](AsyncWebServerRequest *request)
+    {
+      this->handleGetUpdateStatus(request);
+    });
+
+  _server.on("/api/update/start", HTTP_POST,
+    [this](AsyncWebServerRequest *request)
+    {
+      this->handleStartUpdate(request);
+    });
+
+  _server.on(
+    "/api/update/upload", HTTP_POST,
+    [this](AsyncWebServerRequest *request)
+    {
+      if (_nogasmUpdate.isUpdateInProgress())
+      {
+        const bool success = _nogasmUpdate.finishUpdate();
+        if (success)
+        {
+          request->send(200, "application/json", R"({"success":true,"message":"Update successful, restarting..."})");
+        }
+        else
+        {
+          request->send(500, "application/json", R"({"success":false,"message":"Update failed"})");
+        }
+      }
+      else
+      {
+        request->send(400, "application/json", R"({"success":false,"message":"No upload in progress"})");
+      }
+    },
+    [this](const AsyncWebServerRequest *request, const String &filename, const size_t index, uint8_t *data, const size_t len, const bool final)
+    {
+      this->handleUpdateUpload(request, filename, index, data, len, final);
     });
 }
 
@@ -921,4 +1028,75 @@ void NogasmHttp::handleUpdateArousalConfig(AsyncWebServerRequest *request, uint8
   const bool saved = _config.save();
 
   sendSuccessResponse(request, saved, saved ? "Arousal configuration updated" : "Failed to save configuration");
+}
+
+void NogasmHttp::handleGetUpdateStatus(AsyncWebServerRequest *request)
+{
+  JsonDocument doc;
+  generateUpdateStatusJson(doc);
+  sendJsonResponse(request, doc);
+}
+
+void NogasmHttp::handleStartUpdate(AsyncWebServerRequest *request)
+{
+  if (_nogasmUpdate.isUpdateInProgress())
+  {
+    sendSuccessResponse(request, false, "Update already in progress");
+    return;
+  }
+
+  if (!WiFi.isConnected())
+  {
+    sendSuccessResponse(request, false, "WiFi not connected");
+    return;
+  }
+
+  JsonDocument responseDoc;
+  responseDoc["success"] = true;
+  responseDoc["message"] = "Update ready for uploads";
+  responseDoc["hostname"] = WiFi.getHostname();
+  responseDoc["ip"] = WiFi.localIP().toString();
+  responseDoc["firmwareWarning"] = "Firmware update will restart the device";
+  responseDoc["webUploadAvailable"] = true;
+
+  sendJsonResponse(request, responseDoc);
+}
+
+void NogasmHttp::handleUpdateUpload(const AsyncWebServerRequest *request, const String &filename, const size_t index, uint8_t *data, const size_t len, const bool final) const
+{
+  if (!index)
+  {
+    Util::logInfo("Web Update Upload started: %s", filename.c_str());
+    const UpdateMode updateMode = filename.endsWith(".bin") ? UpdateMode::FIRMWARE : UpdateMode::FILESYSTEM;
+
+    // Stop all services
+    _arousalManager.end();
+    _bleManager.disconnectAndCleanupClient();
+
+    // Get expected size from request
+    const size_t expectedSize = request->contentLength();
+
+    // Get MD5 hash if provided
+    String md5Hash = "";
+    if (request->hasParam("md5"))
+    {
+      md5Hash = request->getParam("md5")->value();
+    }
+
+    // Start the update
+    if (!_nogasmUpdate.startUpdate(updateMode, expectedSize, md5Hash))
+    {
+      return;
+    }
+  }
+
+  if (_nogasmUpdate.isUpdateInProgress())
+  {
+    if (!_nogasmUpdate.writeData(data, len))
+    {
+      return;
+    }
+  }
+
+  // todo: possibly finalise here
 }
